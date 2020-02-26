@@ -4,9 +4,6 @@ import itertools
 from scipy import optimize
 import matplotlib.pyplot as plt
 
-# Sample Dataset Size
-N = 100
-
 
 def release_counter(time_step, secret_bits):
     # add noise to count at timestep
