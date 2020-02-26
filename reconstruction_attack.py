@@ -43,7 +43,7 @@ def recover_secret_bits(noisy_counter, starting_guess, n):
 def main():
     averages1 = []
     averages2 = []
-    ns = [100, 500, 1000]
+    ns = [100, 500, 1000, 5000]
     for n in ns:
         print("evaluating n={}".format(n))
         counts1 = []

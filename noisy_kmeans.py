@@ -23,12 +23,13 @@ def generate_data(n, sigma=0.01):
     return x, true_centers, true_clusters
 
 
-def lloydsalg(x, k, T, initial_centers=None):
+def lloydsalg(x, k, T, initial_centers=None, e=1):
     # This algorithm runs Lloyd's algorithm (also called k-means)
     # If no initial centers provided, generate random ones
     if initial_centers == None:
         initial_centers = np.random.normal(loc=0.0, scale=0.3, size=[k, 2])
 
+    initial_centers += np.random.normal(loc=0.0, scale=0.5, size=[k, 2])
     # Create lists to document algorithm's history
     centers_list = [initial_centers]
     closest_list = []
@@ -36,6 +37,8 @@ def lloydsalg(x, k, T, initial_centers=None):
     current_centers = initial_centers.copy()
 
     n = len(x)
+
+    epsilon = e / (2 * T)
 
     for t in range(T):
         # assign each point to its nearest cluster
@@ -64,9 +67,9 @@ def lloydsalg(x, k, T, initial_centers=None):
                 current_centers[j, :] = np.random.normal(loc=0.0, scale=0.1, size=2)
             else:
                 # compute noisy sum
-                aj_hat = sums[j, :] + np.random.normal(0, 0.05, 2)
+                aj_hat = sums[j, :] + np.random.laplace(0, 2 / epsilon, 2)
                 # compute noisu count
-                nj_hat = float(counts[j]) + np.random.normal(0, 0.05)
+                nj_hat = float(counts[j]) + np.random.laplace(0, 1 / epsilon)
                 # DP mechanism for assigning new center, low count reinitializes the centroid
                 if nj_hat <= 5:
                     current_centers[j, :] = np.random.normal(loc=0.0, scale=0.1, size=2)
@@ -80,7 +83,7 @@ def lloydsalg(x, k, T, initial_centers=None):
 
 
 # Let's generate some data!
-x, true_centers, true_clusters = generate_data(400, sigma=0.2)
+x, true_centers, true_clusters = generate_data(2000, sigma=0.2)
 # Plot the data. Colors represent the true cluster of origin
 # The clusters overlap significantly for sigma bigger than about 0.1
 plt.scatter(x[:, 0], x[:, 1], c=true_clusters, alpha=0.5)
@@ -89,7 +92,7 @@ plt.gca().set_aspect('equal', adjustable='box')
 plt.draw()
 # Now run non-noisy k-means
 
-centers_list, closest_list = lloydsalg(x, k=3, T=10)
+centers_list, closest_list = lloydsalg(x, k=3, T=10, e=1)
 # Plot the centers and clusters at each stage.
 
 for t in range(len(centers_list) - 1):
