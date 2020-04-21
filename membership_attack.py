@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 
 
 def run_membership_attack(d, n, sigma, mechanism="m"):
-    X = [[-1 if np.random.rand() < 0.5 else 1 for _ in range(n)] for _ in range(n)]  # Data X
-    X1 = [[-1 if np.random.rand() < 0.5 else 1 for _ in range(n)] for _ in range(n)]  # Random Data
+    X = [[-1 if np.random.rand() < 0.5 else 1 for _ in range(d)] for _ in range(n)]  # Data X
+    X1 = [[-1 if np.random.rand() < 0.5 else 1 for _ in range(d)] for _ in range(n)]  # Random Data
     # Compute A
     if mechanism == "mround":
         A = sigma * np.round(np.average(X, axis=0) / sigma)
     else:
-        A = np.average(X, axis=0) + np.random.normal(0, sigma, n)
+        A = np.average(X, axis=0) + np.random.normal(0, sigma, d)
     # compute similarity score
     scores_in = np.array([np.dot(A, X[i]) for i in range(n)])
     scores_out = np.array([np.dot(A, X1[i]) for i in range(n)])
